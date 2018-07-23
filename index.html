@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Captcha Project</title>
+
+    <!-- bootstrap.min.css -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <!-- bootstrap-theme.min.css -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <!-- font-awesome.min.css -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+
+    <!-- jquery-1.12.0.min.js -->
+    <script src="http://code.jquery.com/jquery-1.12.3.min.js"></script>
+    <!-- jquery-migrate-1.2.1.min.js -->
+    <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <!-- bootstrap.min.js -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+    <style media="screen">
+        #captchaValue,
+        #canvas {
+            width: 180px;
+            height: 80px;
+        }
+
+        #captchaValue {
+            background-color: #0e70d1;
+            /*background-color: cornflowerblue;*/
+            font: 60px sans-serif;
+            line-height: 80px;
+            ;
+            /*color: rgba(255, 255, 255, 0.12);*/
+            color: #ffffff;
+            -webkit-box-sizing: content-box;
+            -moz-box-sizing: content-box;
+            box-sizing: content-box;
+            border: none;
+            text-align: center;
+            -o-text-overflow: clip;
+            text-overflow: clip;
+            /*text-shadow: 4px 0 9px rgba(255, 255, 255, 0.51);*/
+        }
+        /* tablet */
+
+        @media (max-width: 992px) {}
+        /* phone */
+
+        @media (max-width: 768px) {}
+    </style>
+</head>
+
+<body>
+    <table>
+        <tr>
+            <td colspan="2" class="captcha-container">
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input id="captchaText" type="text" maxlength="3">
+            </td>
+            <td>
+                <input class="submit" type="submit" value="Send">
+            </td>
+        </tr>
+    </table>
+    <!-- page based jquery -->
+    <script type="text/javascript">
+        $(document).ready(function() {
+            // check if canvas supported
+            var canvasEl = document.createElement('canvas');
+            if (!canvasEl.getContext) {
+                $('.captcha-container').html('<label id="captchaValue"></label>');
+                return;
+            } else {
+                $('.captcha-container').html('<canvas id="canvas" width="180px" height="80px"></canvas>');
+            }
+            // generating captcha function
+            function generateCaptcha() {
+                var text = "";
+                // var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+                var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                for (var i = 0; i < 3; i++) {
+                    text += possible.charAt(Math.floor(Math.random() * possible.length));
+                }
+                return text;
+            }
+            // get generated captcha value from generateCaptcha() function
+            var generatedCaptcha = generateCaptcha();
+            var canvas = document.getElementById('canvas');
+            var ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#0e70d1';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#fff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = "middle";
+            ctx.font = '60px sans-serif';
+            // fill values to canvas and label on page load
+            ctx.fillText(generatedCaptcha, canvas.width / 2, canvas.height / 2);
+            $('#captchaValue').text(generatedCaptcha);
+
+            $('.submit').click(function() {
+                var captchaValue = $('#captchaValue').text();
+                var captchaText = $('#captchaText').val().toUpperCase();
+                // validate capthca
+                if (captchaText.length == 0) {
+                    console.log('Please enter the security code..');
+                } else if (captchaText.length < 3) {
+                    console.log('Missing security code.');
+                } else if (captchaText == generatedCaptcha) {
+                    console.log('Successful.');
+                } else {
+                    console.log('Wrong security code.');
+                    // varken başarılı ya girmiyor
+                    var generatedCaptcha = generateCaptcha();
+                    var canvas = document.getElementById('canvas');
+                    var ctx = canvas.getContext('2d');
+                    ctx.fillStyle = '#0e70d1';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = '#fff';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = "middle";
+                    ctx.font = '60px sans-serif';
+                    ctx.fillText(generatedCaptcha, canvas.width / 2, canvas.height / 2);
+                    $('#captchaValue').text(generatedCaptcha);
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
